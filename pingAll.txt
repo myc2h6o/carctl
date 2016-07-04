@@ -1,6 +1,6 @@
 echo processing...
-echo ping日期：%date% >> pingall.txt
-echo ping时间：%time% >> pingall.txt
+echo ping date：%date% >> pingall.txt
+echo ping time：%time% >> pingall.txt
 echo.>>pingall.txt
 echo ip：>>pingall.txt
 
