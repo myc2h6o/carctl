@@ -1,0 +1,9 @@
+config: netsh wlan set hostednetwork mode=allow ssid=name key=password
+start: netsh wlan start hostednetwork
+stop:  netsh wlan stop hostednetwrok
+
+(may need to use administrator)
+
+mychp: mayichun318
+
+192.168.137.79
