@@ -36,7 +36,7 @@ void Car::init() {
 }
 
 void Car::setPersonPositions(const vector<Position> &positions) {
-	personPositions	= positions;
+	personPositions = positions;
 }
 
 void Car::follow() {
@@ -52,7 +52,7 @@ void Car::follow() {
 	float rotate_r = 0.0;
 	//rotate_r
 	if (x > 0.0001 || x < -0.0001) { rotate_r = sqrt(x * x + y * y) / 2 / sqrt(1 - y * (y / (x * x + y * y))); }
-	
+
 	int status = C_WALK;
 	//spin when rotate_r too small, stop when too close to person
 	if (rotate_r > 0 && rotate_r <= CAR_RADIUS) {
@@ -69,7 +69,7 @@ void Car::follow() {
 	}
 	else if (status == C_SPIN) {
 		unsigned char high_char = speedLevel + 9;
-		if(rotate_r < 0){ high_char += 3; }
+		if (rotate_r < 0) { high_char += 3; }
 		unsigned char low_char = 7;
 		outputToLower((high_char << 4) | low_char);
 	}
@@ -100,6 +100,9 @@ void Car::process() {
 		setPersonPositions(positions);
 		follow();
 	}
+	else if (status == S_FOLLOW) {
+		follow();
+	}
 	else {
 		stop();
 	}
@@ -110,10 +113,10 @@ void Car::outputToLower(unsigned char raw_speed) {
 	DWORD wCount;//读取的字节数
 	BOOL bReadStat;
 	unsigned char output_buffer[1] = { raw_speed };
-	cout << (((int)raw_speed & 0xf0) >> 4) <<"  "<< ((int)raw_speed &0xf)<< endl;
+	//cout << (((int)raw_speed & 0xf0) >> 4) << "  " << ((int)raw_speed & 0xf) << endl;
 	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, NULL);
 	if (!bReadStat)
 	{
-		printf("write com fail\n");
+		//printf("write com fail\n");
 	}
 }
