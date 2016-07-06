@@ -52,7 +52,7 @@ int main() {
 		while (1) {
 			int ret = recvfrom(sClient, recvBuf, FILE_BUFFER_SIZE, 0, (SOCKADDR*)&addrClient, &length);
 			//[TODO] add process here
-			printf("%s", recvBuf);
+			printf("%d %s\n", ret, recvBuf);
 		}
 		closesocket(sClient);
 		WSACleanup();

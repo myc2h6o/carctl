@@ -1,11 +1,11 @@
 //moving control input
-const byte L_PULSE_PIN = 3;
-const byte R_PULSE_PIN = 4;
-const byte L_DIR_PIN = 5;
-const byte R_DIR_PIN = 6;
+const byte L_PULSE_PIN = 5;
+const byte R_PULSE_PIN = 6;
+const byte L_DIR_PIN = 7;
+const byte R_DIR_PIN = 9;
 const byte TEST_PIN = 13;
 
-const unsigned int DEFAULT_WAIT_TIME = 100;
+const unsigned int DEFAULT_WAIT_TIME = 200;
 
 volatile unsigned long last_accept_time = 0;
 volatile unsigned long max_wait_time = DEFAULT_WAIT_TIME;
@@ -18,8 +18,10 @@ volatile byte move_status = 0;
 volatile unsigned int pulse_count = 0;
 
 unsigned int delay_time[4] = {34452, 16328, 11363, 9890};
-unsigned int pulse_left[16] =  {41, 40, 43, 36, 40, 36, 36, 35, 34, 33, 35, 30, 34, 30, 29, 35};
-unsigned int pulse_right[16] = {29, 30, 34, 30, 35, 33, 34, 35, 36, 36, 40, 36, 43, 40, 41, 35}; //last one is for error case
+//unsigned int pulse_left[16] =  {41, 40, 43, 36, 40, 36, 36, 35, 34, 33, 35, 30, 34, 30, 29, 35};
+//unsigned int pulse_right[16] = {29, 30, 34, 30, 35, 33, 34, 35, 36, 36, 40, 36, 43, 40, 41, 35}; //last one is for error case
+unsigned int pulse_left[16] =  {48, 45, 42, 40, 35, 35, 33, 32, 30, 30, 30, 29, 26, 25, 24, 32};
+unsigned int pulse_right[16] = {24, 25, 26, 29, 30, 30, 30, 32, 33, 35, 35, 40, 42, 45, 48, 32}; //last one is for error case
 
 void setup() {
   //pin modes
@@ -36,7 +38,7 @@ void loop() {
   raw_speed = Serial.read();
   if(raw_speed == 255) {
     //serial no value
-    unsigned long new_wait_time = millis() - last_accept_time;
+    /*unsigned long new_wait_time = millis() - last_accept_time;
     if(new_wait_time > max_wait_time){
       //over time
       digitalWrite(TEST_PIN, LOW);
@@ -47,11 +49,11 @@ void loop() {
       car_stop = 1;
       max_wait_time = new_wait_time;
       if(max_wait_time > DEFAULT_WAIT_TIME) max_wait_time = DEFAULT_WAIT_TIME;
-    }
+    }*/
   }else{
     digitalWrite(TEST_PIN, HIGH);
     car_stop = 0;
-    //serial has value 
+    //serial has value  
     //self-adaption max_wait_time
     max_wait_time = (millis() - last_accept_time + max_wait_time + 1) / 2;
     last_accept_time = millis();
