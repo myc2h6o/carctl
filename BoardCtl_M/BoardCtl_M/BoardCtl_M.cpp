@@ -143,7 +143,6 @@ int main() {
 				{
 					throw CREATE_PROCESS_ERROR;
 				}
-
 			}
 			else if (strcmp(receiveMessage, "STOP_CAR") == 0) {
 				fp = fopen("BoardCtl.log.txt", "a+");
@@ -159,6 +158,8 @@ int main() {
 			}
 			else if (strcmp(receiveMessage, "SHUT_DOWN") == 0) {
 				system("shutdown /s /t 0");
+			}
+			else if (strcmp(receiveMessage, "CKECK") == 0) {
 			}
 			else if (strcmp(receiveMessage, "UPLOAD_CAR_CTL") == 0) {
 				sServer = accept(sListen, (struct sockaddr*)&saClient, &length);

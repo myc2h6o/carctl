@@ -60,7 +60,7 @@ int main() {
 			saServer.sin_family = AF_INET;
 			saServer.sin_port = htons(SERVER_PORT);
 			saServer.sin_addr.S_un.S_addr = inet_addr(NET_ADDR.c_str());
-			cout << "command: upload/start_stay/start_forward/stop/shutdown/quit:\n";
+			cout << "command: check/upload/start_stay/start_forward/stop/shutdown/quit:\n";
 			//get command
 			cin >> command;
 			if (command == "quit") {
@@ -83,6 +83,9 @@ int main() {
 			}
 			else if (command == "upload") {
 				command = "UPLOAD_CAR_CTL";
+			}
+			else if (command == "check") {
+				command = "CHECK";
 			}
 			else {
 				cout << "wrong command, ";
@@ -149,6 +152,8 @@ int main() {
 						ret = fread(file_send_buffer, 1, FILE_BUFFER_SIZE, fp);
 						ret = send(sClient, (char*)&file_send_buffer, ret, 0);
 						if (ret == SOCKET_ERROR) {
+							fclose(fp);
+							fp = NULL;
 							throw SEND_FAIL;
 						}
 					}
@@ -157,6 +162,8 @@ int main() {
 					closesocket(sClient);
 					WSACleanup();
 					cout << "upload success\n";
+					fclose(fp);
+					fp = NULL;
 				}
 			}
 		}
