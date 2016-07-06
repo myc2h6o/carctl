@@ -18,12 +18,12 @@
     <ClCompile Include="UDP_Client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="UDPRecv.cpp">
+    <ClCompile Include="Sender.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UDPRecv.h">
+    <ClInclude Include="Sender.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

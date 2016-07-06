@@ -3,16 +3,12 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
-
 #pragma comment(lib, "ws2_32.lib")
 using namespace std;
 
 const int WSA_STARTUP_FAIL = 1;
 const int INVALID_WNISOCK_VERSION = 2;
 const int SOCKET_FAIL = 3;
-const int CONNECT_FAIL = 4;
-const int SEND_FAIL = 5;
-const int UPLOAD_FLE_NOT_FOUND = 6;
 const int FILE_BUFFER_SIZE = 512;
 
 #define SERVER_PORT 2306
@@ -55,7 +51,7 @@ int main() {
 		int length = sizeof(SOCKADDR);
 		while (1) {
 			int ret = recvfrom(sClient, recvBuf, FILE_BUFFER_SIZE, 0, (SOCKADDR*)&addrClient, &length);
-
+			//[TODO] add process here
 			printf("%s", recvBuf);
 		}
 		closesocket(sClient);
