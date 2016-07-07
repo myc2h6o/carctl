@@ -1,5 +1,6 @@
-﻿#include <pxcsensemanager.h>
+﻿
 #include <pxcsession.h>
+#include <pxcsensemanager.h>
 #include "util_render.h"
 #include <iostream>
 #include <string>
@@ -8,11 +9,13 @@
 #include <fstream>
 #include "Global.h"
 #include "GestureRecognition.h"
+#include "Sender.h"
 #include "Car.h"
 
 using namespace cv;
 using namespace std;
 
+const int dataLen = WIDTH*HEIGHT * 6;
 
 PXCProjection *projection;
 Mat depth;
@@ -26,7 +29,6 @@ int main(int argc, char **argv)
 
 	UtilRender*  Rcolor = new UtilRender(L"COLOR");
 	UtilRender*  Rdepth = new UtilRender(L"DEPTH");
-
 
 	PXCSenseManager *psm = PXCSenseManager::CreateInstance();
 	if (!psm)
@@ -59,12 +61,16 @@ int main(int argc, char **argv)
 
 	int lastResult = GESTURE_NONE;
 	int currResult = GESTURE_NONE;
+	int result = currResult;
 	int action = ACTION_NONE;
 	int dx, dy, dz;
 	int currx, lastx, curry, lasty, currz, lastz;
 	dx = dy = dz = lastx = lasty = lastz = 0;
 	int count = 0;
+	int gestureCount = 0;
 	bool first = true; // 第一帧
+	char sendData[dataLen];
+	int actionCounter = 0;
 	while (waitKey(1))
 	{
 		if (psm->AcquireFrame(true) < PXC_STATUS_NO_ERROR) break;
@@ -83,8 +89,23 @@ int main(int argc, char **argv)
 		depth = Mat(Size(depth_information.width, depth_information.height), CV_16UC1, (void*)depth_data.planes[0], depth_data.pitches[0] / sizeof(uchar));
 		Mat color(Size(color_information.width, color_information.height), CV_8UC3, (void*)color_data.planes[0], color_data.pitches[0] / sizeof(uchar));
 
-		medianBlur(depth, depth, 5);
-	    currResult = analyse((unsigned short*)depth.data,&currx,&curry,&currz);
+		Sender::send((char *)depth.data, dataLen);
+		/*
+		for (int i = 0; i < dataLen; i += 6)
+		{
+		ushort row = ((i / 6) / WIDTH);
+		ushort col = ((i / 6)) % WIDTH;
+		sendData[i] = row & 0xff;
+		sendData[i + 1] = (row >> 8) & 0xff;
+		sendData[i + 2] = col & 0xff;
+		sendData[i + 3] = (col >> 8) & 0xff;
+		sendData[i + 4] = depth.data[i / 3];
+		sendData[i + 5] = depth.data[i / 3 + 1];
+		}
+		Sender::send(sendData, dataLen);
+		*/
+		//medianBlur(depth, depth, 5);
+		currResult = analyse((unsigned short*)depth.data, &currx, &curry, &currz);
 		if (lastResult == NO_HAND)
 			first = true;
 		if (first)
@@ -110,47 +131,58 @@ int main(int argc, char **argv)
 		lasty = curry;
 		lastz = currz;
 		//printf("%d %d %d %d\n", currResult, currx, curry, currz);
-		if (currResult != 0)
+		if (currResult == lastResult)
+			gestureCount++;
+		else
+			gestureCount = 0;
+
+		if (gestureCount >= 4)
 		{
-			if (currResult == GESTURE_PALM)
+			result = currResult;
+			gestureCount = 0;
+		}
+
+		if (result != 0)
+		{
+			if (action == ACTION_FOLLOW)
 			{
-				if (dx > 100)
-					printf("turn left\n");
-				else if (dx < -100)
-					printf("turn right\n");
-				else {
-					car.setStatus(S_STOP);
-					car.process();
-				}
+				if (result == GESTURE_FIST || result == GESTURE_NONE)
+					action = ACTION_FOLLOW;
+				else
+					action = ACTION_STOP;
 			}
-			else if (currResult == GESTURE_FIST)
+			else
 			{
-				if (lastResult == GESTURE_PALM || lastResult == GESTURE_FIST) {
-					//printf("follow pos: (%f,%f)\n", (float)(currx)/100, (float(currz+200)/100));
-					vector<Position> pos;
-					pos.push_back(Position(currx, currz + 200));
-					//car move
-					if (car.getStatus() == S_FORWARD) {
-						car.process();
-					}
-					else {
-						car.setStatus(S_FOLLOW);
-						car.setPersonPositions(pos);
-						car.follow();
-					}
+				if (result == GESTURE_PALM)
+				{
+					action = ACTION_STOP;
+				}
+				else if (result == GESTURE_FIST)
+				{
+					action = ACTION_FOLLOW;
 				}
 			}
 		}
 		else
 		{
-			if (car.getStatus() == S_FORWARD) {
-				car.process();
-			}
-			else {
-				car.setStatus(S_STOP);
-				car.stop();
-			}
+			if (result == NO_HAND)
+				action = ACTION_NONE;
 		}
+		if (action == ACTION_FOLLOW)
+		{
+			vector<Position> pos;
+			pos.push_back(Position(currx, currz + 200));
+			car.setStatus(S_FOLLOW);
+			car.setPersonPositions(pos);
+			car.follow();
+			printf("follow\n");
+		}
+		else if (action == ACTION_STOP || action == ACTION_NONE)
+		{
+			printf("stop\n");
+			car.stop();
+		}
+
 		lastResult = currResult;
 
 		depthIm->ReleaseAccess(&depth_data);
