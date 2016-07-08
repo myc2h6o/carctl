@@ -1,12 +1,12 @@
 #include "Car.h"
 
 void Car::init() {
-	hCom = CreateFile(TEXT("COM4"),//COM口
-		GENERIC_READ | GENERIC_WRITE, //允许读和写
+	hCom = CreateFile(TEXT("COM3"),//COM口
+		GENERIC_WRITE, //允许读和写
 		0, //独占方式
 		NULL,
 		OPEN_EXISTING, //打开而不是创建
-		FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,//asynchronize
+		FILE_FLAG_OVERLAPPED,//asynchronize
 		NULL);
 	if (hCom == (HANDLE)-1)
 	{
@@ -16,12 +16,8 @@ void Car::init() {
 	{
 		printf("COM打开成功！\n");
 	}
-	SetupComm(hCom, 1024, 1024); //输入缓冲区和输出缓冲区的大小都是1024
+	SetupComm(hCom, 1, 1024); //输入缓冲区和输出缓冲区的大小都是1024
 	COMMTIMEOUTS TimeOuts;
-	//设定读超时
-	TimeOuts.ReadIntervalTimeout = 1000;
-	TimeOuts.ReadTotalTimeoutMultiplier = 500;
-	TimeOuts.ReadTotalTimeoutConstant = 5000;
 	//设定写超时
 	TimeOuts.WriteTotalTimeoutMultiplier = 500;
 	TimeOuts.WriteTotalTimeoutConstant = 2000;
@@ -138,7 +134,10 @@ void Car::outputToCar(unsigned char raw_speed) {
 	BOOL bReadStat;
 	unsigned char output_buffer[1] = { raw_speed };
 	cout << (((int)raw_speed & 0xf0) >> 4) << "  " << ((int)raw_speed & 0xf) << endl;
-	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, NULL);
+	OVERLAPPED ov;
+	memset(&ov, 0, sizeof(ov));
+	ov.hEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, &ov);
 	if (!bReadStat)
 	{
 		printf("write com fail\n");
