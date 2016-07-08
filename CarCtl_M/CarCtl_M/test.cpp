@@ -3,10 +3,6 @@
 
 int main(int argc, char **argv){
 	Car car;
-	for (int i = 0; i < argc; ++i) {
-		cout << argv[i] << " ";
-	}
-	cout << endl;
 	if ((argc > 1) && (strcmp(argv[1], "FORWARD") == 0)) {
 		car.setStatus(S_FORWARD);
 	}
@@ -15,12 +11,32 @@ int main(int argc, char **argv){
 		sscanf_s(argv[2], "%d", &initSpeed);
 		car.setSpeed(initSpeed);
 	}
-	cout << car.getStatus() << " " << car.getSpeed() << endl;
-
-	for (int i = 0; i < 200; ++i) {
-		car.run(S_FORWARD);
-		Sleep(33);
+	if (car.getSpeed() == 0) {
+		for (int i = 0; i < 100; ++i) {
+			car.run(S_FORWARD);
+			Sleep(10);
+		}
+		car.run(S_STOP);
 	}
-	car.run(S_STOP);
-	cin.get();
+	else if (car.getSpeed() == 1) {
+		for (int i = 0; i < 100; ++i) {
+			car.run(S_BACKWARD);
+			Sleep(10);
+		}
+		car.run(S_STOP);
+	}
+	else if (car.getSpeed() == 2) {
+		for (int i = 0; i < 100; ++i) {
+			car.run(S_SPIN_LEFT);
+			Sleep(10);
+		}
+		car.run(S_STOP);
+	}
+	else if (car.getSpeed() == 3) {
+		for (int i = 0; i < 100; ++i) {
+			car.run(S_SPIN_RIGHT);
+			Sleep(33);
+		}
+		car.run(S_STOP);
+	}
 }

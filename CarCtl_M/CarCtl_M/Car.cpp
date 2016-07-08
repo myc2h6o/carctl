@@ -111,7 +111,7 @@ void Car::follow(float x, float y) {
 }
 
 void Car::forward() {
-	outputToCar(((speedLevel + 5) << 4) | 7);
+	outputToCar(((speedLevel + 1) << 4) | 7);
 }
 
 void Car::backward() {
@@ -137,11 +137,11 @@ void Car::outputToCar(unsigned char raw_speed) {
 	DWORD wCount;//读取的字节数
 	BOOL bReadStat;
 	unsigned char output_buffer[1] = { raw_speed };
-	//cout << (((int)raw_speed & 0xf0) >> 4) << "  " << ((int)raw_speed & 0xf) << endl;
+	cout << (((int)raw_speed & 0xf0) >> 4) << "  " << ((int)raw_speed & 0xf) << endl;
 	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, NULL);
-	/*if (!bReadStat)
+	if (!bReadStat)
 	{
 		printf("write com fail\n");
 	}
-	*/
+	
 }

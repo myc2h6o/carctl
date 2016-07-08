@@ -77,7 +77,6 @@ void loop() {
       break;
     case 12: case 13: case 14: //anti-clockwise
       speed_level = move_status - 12;
-      
       digitalWrite(L_DIR_PIN, LOW);
       digitalWrite(R_DIR_PIN, LOW);
       break;
