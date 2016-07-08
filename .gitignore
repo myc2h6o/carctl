@@ -16,6 +16,11 @@ local.properties
 .settings/
 .loadpath
 
+*.bmp
+*.png
+*.jpg
+*.jpeg
+
 # External tool builders
 .externalToolBuilders/
 
