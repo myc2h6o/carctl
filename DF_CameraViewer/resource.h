@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by FF_HandsConsole.rc
+// Used by camera_viewer.rc
 
 // Next default values for new objects
 // 

@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>FF_HandsConsole</ProjectName>
-    <RootNamespace>FF_HandsConsole</RootNamespace>
+    <ProjectName>DF_CameraViewer</ProjectName>
+    <RootNamespace>DF_CameraViewer</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -226,16 +226,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="timer.cpp"  />
-    <ClCompile Include="main.cpp"  />
+    <ClCompile Include="Src\camera_viewer.cpp"  />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h"  />
-    <ClInclude Include="timer.h"  />
-    <ClInclude Include="Definitions.h"  />
+    <ClInclude Include="..\common\include\util_cmdline.h"  />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="FF_HandsConsole.rc"  />
+    <ResourceCompile Include="camera_viewer.rc"  />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

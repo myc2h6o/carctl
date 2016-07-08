@@ -12,22 +12,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="timer.cpp">
+    <ClCompile Include="Src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\Car.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GestureRecognition.cpp">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="src\GestureRecognition.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Car.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sender.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Util.cpp">
+    <ClCompile Include="src\Sender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,30 +29,24 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="timer.h">
+    <ClInclude Include="..\common\include\util_cmdline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Definitions.h">
+    <ClInclude Include="src\Car.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Global.h">
+    <ClInclude Include="src\GestureRecognition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GestureRecognition.h">
+    <ClInclude Include="src\Global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Car.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Util.h">
+    <ClInclude Include="src\Sender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="FF_HandsConsole.rc">
+    <ResourceCompile Include="camera_viewer.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

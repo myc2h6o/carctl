@@ -6,8 +6,8 @@
 using namespace std;
 #pragma comment(lib, "ws2_32.lib")
 
-#define SERVER_ADDR "192.168.1.100"
-//#define SERVER_ADDR "127.0.0.1"
+//#define SERVER_ADDR "192.168.0.106"
+#define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT  2306
 
 const int WSA_STARTUP_FAIL = 2;
