@@ -1,6 +1,5 @@
-﻿
+﻿#include <pxcsensemanager.h>
 #include <pxcsession.h>
-#include <pxcsensemanager.h>
 #include "util_render.h"
 #include <iostream>
 #include <string>
@@ -11,6 +10,8 @@
 #include "GestureRecognition.h"
 #include "Sender.h"
 #include "Car.h"
+#include <string.h>
+#include <time.h>
 
 using namespace cv;
 using namespace std;
@@ -47,7 +48,7 @@ int main(int argc, char **argv)
 	}
 
 	projection = psm->QueryCaptureManager()->QueryDevice()->CreateProjection();
-	
+
 	PXCImage *colorIm, *depthIm;
 	PXCImage::ImageData depth_data;
 	PXCImage::ImageData color_data;
@@ -59,22 +60,24 @@ int main(int argc, char **argv)
 	namedWindow("color", 0);
 	namedWindow("depth", 0);
 
-	int lastResult = GESTURE_NONE;
+	int lastResult = NO_HAND;
 	int currResult = GESTURE_NONE;
-	int result = currResult;
 	int action = ACTION_NONE;
 	int dx, dy, dz;
 	int currx, lastx, curry, lasty, currz, lastz;
-	dx = dy = dz = lastx = lasty = lastz = 0;
-	int count = 0;
-	int gestureCount = 0;
+	dx = dy = dz = 0;//lastx = lasty = lastz = 0;
+	//int count = 0;
+	//int 
+	int handPosition[SAME_COUNT][4] = { 0 };
 	bool first = true; // 第一帧
 	char sendData[dataLen];
-	int actionCounter = 0;
+	int sameGesture = 0;
+	clock_t startClock = clock();
 	while (waitKey(1))
 	{
 		if (psm->AcquireFrame(true) < PXC_STATUS_NO_ERROR) break;
 
+		//Sender::send("s", 1);
 		PXCCapture::Sample *sample = psm->QuerySample();
 
 		colorIm = sample->color;
@@ -89,34 +92,68 @@ int main(int argc, char **argv)
 		depth = Mat(Size(depth_information.width, depth_information.height), CV_16UC1, (void*)depth_data.planes[0], depth_data.pitches[0] / sizeof(uchar));
 		Mat color(Size(color_information.width, color_information.height), CV_8UC3, (void*)color_data.planes[0], color_data.pitches[0] / sizeof(uchar));
 
-		Sender::send((char *)depth.data, dataLen);
 		/*
 		for (int i = 0; i < dataLen; i += 6)
 		{
-		ushort row = ((i / 6) / WIDTH);
-		ushort col = ((i / 6)) % WIDTH;
-		sendData[i] = row & 0xff;
-		sendData[i + 1] = (row >> 8) & 0xff;
-		sendData[i + 2] = col & 0xff;
-		sendData[i + 3] = (col >> 8) & 0xff;
-		sendData[i + 4] = depth.data[i / 3];
-		sendData[i + 5] = depth.data[i / 3 + 1];
+			ushort row = ((i / 6) / WIDTH);
+			ushort col = ((i / 6)) % WIDTH;
+			sendData[i] = row & 0xff;
+			sendData[i + 1] = (row >> 8) & 0xff;
+			sendData[i + 2] = col & 0xff;
+			sendData[i + 3] = (col >> 8) & 0xff;
+			sendData[i + 4] = depth.data[i / 3];
+			sendData[i + 5] = depth.data[i / 3 + 1];
 		}
 		Sender::send(sendData, dataLen);
 		*/
 		//medianBlur(depth, depth, 5);
-		currResult = analyse((unsigned short*)depth.data, &currx, &curry, &currz);
+	    currResult = analyse((unsigned short*)depth.data,&currx,&curry,&currz);
+
+		//Sender::send((char *)depth.data, dataLen);
+		/*
+		switch (currResult)
+		{
+		case NO_HAND:
+			Sender::send("a", 1);
+			break;
+		case GESTURE_NONE:
+			Sender::send("b", 1);
+			break;
+		case GESTURE_PALM:
+			Sender::send("c", 1);
+			break;
+		case GESTURE_FIST:
+			Sender::send("d", 1);
+			break;
+		case TWO_HANDS:
+			Sender::send("e", 1);
+			break;
+		default:
+			break;
+		}*/
 		if (lastResult == NO_HAND)
 			first = true;
 		if (first)
 		{
-			lastx = currx;
-			lasty = curry;
-			lastz = currz;
+			//lastx = currx;
+			//lasty = curry;
+			//lastz = currz;
 			dx = 0;
 			first = false;
 		}
-		if (count < MAX_COUNT)
+		clock_t nowClock = clock();
+		for (int i = 0;i != SAME_COUNT - 1;i++)
+		{
+			handPosition[i][0] = handPosition[i + 1][0];
+			handPosition[i][1] = handPosition[i + 1][1];
+			handPosition[i][2] = handPosition[i + 1][2];
+			handPosition[i][3] = handPosition[i + 1][3];
+		}
+		handPosition[SAME_COUNT - 1][0] = currx;
+		handPosition[SAME_COUNT - 1][1] = curry;
+		handPosition[SAME_COUNT - 1][2] = currz;
+		handPosition[SAME_COUNT - 1][3] = nowClock;
+		/*if (count < MAX_COUNT)
 		{
 			dx += currx - lastx;
 			count++;
@@ -125,49 +162,91 @@ int main(int argc, char **argv)
 		{
 			dx = 0;
 			count = 0;
-		}
-		printf("Res: %d currx: %d, lastx: %d dx: %d\n", lastResult, currx, lastx, dx);
-		lastx = currx;
-		lasty = curry;
-		lastz = currz;
+		}*/
+		printf("Res: %d currx: %d, curry: %d currz: %d clock: %d\n", lastResult, currx, curry, currz,nowClock);
+		//lastx = currx;
+		//lasty = curry;
+		//lastz = currz;
 		//printf("%d %d %d %d\n", currResult, currx, curry, currz);
-		if (currResult == lastResult)
-			gestureCount++;
-		else
-			gestureCount = 0;
 
-		if (gestureCount >= 4)
-		{
-			result = currResult;
-			gestureCount = 0;
-		}
+		//state change
 
-		if (result != 0)
+		if (currResult != NO_HAND)
 		{
+			if (lastResult == currResult)
+				sameGesture++;
+			else
+				sameGesture = 1;
+			if (sameGesture == SAME_COUNT)
+			{
+				if (currResult == GESTURE_PALM)
+					action = ACTION_STOP;
+				if (currResult == GESTURE_FIST)
+					action = ACTION_FOLLOW;
+			}
+			if (sameGesture >= SAME_COUNT)
+			{
+
+				if (currResult == GESTURE_SIDE)
+				{
+					//printf("DIF: %d\n", handPosition[SAME_COUNT - 1][0] - handPosition[0][0]);
+					//printf("dif %d %d\n", handPosition[SAME_COUNT - 1][0] - handPosition[0][0], handPosition[SAME_COUNT - 1][3] - handPosition[0][3]);
+					int dx = handPosition[SAME_COUNT - 1][0] - handPosition[0][0];
+					int dt = handPosition[SAME_COUNT - 1][3] - handPosition[0][3];
+					if (dx>dt*TURN_MIN_SPEED)
+					{
+						action = ACTION_TURNLEFT;
+					}
+					if (dx<-dt*TURN_MIN_SPEED)
+					{
+						action = ACTION_TURNRIGHT;
+					}
+				}
+
+				if (currResult == TWO_HANDS)
+				{
+					int dz = handPosition[SAME_COUNT - 1][2] - handPosition[0][2];
+					int dt = handPosition[SAME_COUNT - 1][3] - handPosition[0][3];
+					if (dz>dt*TURN_MIN_SPEED)
+					{
+						action = ACTION_BACKWARD;
+					}
+					if (dz<-dt*TURN_MIN_SPEED)
+					{
+						action = ACTION_FORWARD;
+					}
+				}
+			}
+			/*
 			if (action == ACTION_FOLLOW)
 			{
-				if (result == GESTURE_FIST || result == GESTURE_NONE)
+				if (currResult == GESTURE_FIST || currResult == GESTURE_NONE)
 					action = ACTION_FOLLOW;
 				else
 					action = ACTION_STOP;
 			}
 			else
 			{
-				if (result == GESTURE_PALM)
+				if (currResult == GESTURE_PALM)
 				{
-					action = ACTION_STOP;
+					if (lastResult == GESTURE_PALM)
+						action = ACTION_STOP;
 				}
-				else if (result == GESTURE_FIST)
+				else if (currResult == GESTURE_FIST)
 				{
-					action = ACTION_FOLLOW;
+					if (lastResult == GESTURE_FIST)
+						action = ACTION_FOLLOW;
 				}
-			}
+			}*/
 		}
 		else
 		{
-			if (result == NO_HAND)
+			if(lastResult == NO_HAND)
 				action = ACTION_NONE;
+			sameGesture = 0;
 		}
+
+		//car action
 		if (action == ACTION_FOLLOW)
 		{
 			vector<Position> pos;
@@ -180,7 +259,27 @@ int main(int argc, char **argv)
 		else if (action == ACTION_STOP || action == ACTION_NONE)
 		{
 			printf("stop\n");
-			car.stop();
+			car.stop();		
+		}
+		else if (action == ACTION_FORWARD)
+		{
+			printf("forward\n");
+			//car.forward;
+		}
+		else if (action == ACTION_BACKWARD)
+		{
+			printf("backward\n");
+			//car.forward;
+		}
+		else if (action == ACTION_TURNLEFT)
+		{
+			printf("turnleft\n");
+			//car.forward;
+		}
+		else if (action == ACTION_TURNRIGHT)
+		{
+			printf("turnright\n");
+			//car.forward;
 		}
 
 		lastResult = currResult;

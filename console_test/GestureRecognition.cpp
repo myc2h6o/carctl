@@ -2,6 +2,7 @@
 #include"pxcprojection.h"
 #include <vector>
 #include <opencv2\opencv.hpp>
+#include "Util.h"
 //#include <algorithm>
 using namespace cv;
 using namespace std;
@@ -65,6 +66,7 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 	int currow = 0;
 	int hand = 0;
 	int top = 0;
+	int bottom = 0;
 	for (int i = 0; i != HEIGHT; i++)
 	{
 		currow = 0;
@@ -75,6 +77,8 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 			{
 				if (top == 0)
 					top = i;
+				if (i > bottom)
+					bottom = i;
 				if (mid_tip)
 				{
 					tmpx = j;
@@ -96,10 +100,12 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 		if (maxrow < currow)
 			maxrow = currow;
 	}
+
+
 	//划分完后，计算总共的点，和距离平方乘积为定值，排除人
 	int tmp_para = start * start * (hand / 100);
 
-	if (tmp_para < 6000000 || tmp_para>50000000)
+	if (tmp_para < 3000000 || tmp_para>80000000)
 	{
 		//debug
 		*x = *y = *z = 0;
@@ -118,6 +124,56 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 	*x = pos3D.x;
 	*y = pos3D.y;
 	*z = pos3D.z;
+
+	dilation(depth_array, WIDTH, HEIGHT);
+	dilation(depth_array, WIDTH, HEIGHT);
+	erosion(depth_array, WIDTH, HEIGHT);
+	erosion(depth_array, WIDTH, HEIGHT);
+	erosion(depth_array, WIDTH, HEIGHT);
+	erosion(depth_array, WIDTH, HEIGHT);
+	dilation(depth_array, WIDTH, HEIGHT);
+	dilation(depth_array, WIDTH, HEIGHT);
+
+	//erosion(depth_array, WIDTH, HEIGHT);
+
+
+	//printf("size: %lf\n", (bottom-top)*1.0/ maxrow);
+	if ((bottom - top) > maxrow * 2.5)
+		return GESTURE_SIDE;
+
+	int handnum = -1;
+	for (int wj = 0; wj != WIDTH; wj++)
+	{
+		int flag = 0;
+		for (int hi = 0; hi != HEIGHT; hi++)
+		{
+			if (depth_array[hi * WIDTH + wj])
+			{
+				flag = 1;
+				break;
+			}
+		}
+		if (!flag)
+		{
+			if (handnum == 0)
+			{
+				handnum = 1;
+			}
+		}
+		else
+		{
+			if (handnum == -1)
+			{
+				handnum = 0;
+			}
+			else if (handnum == 1)
+			{
+				handnum = 2;
+				return TWO_HANDS;
+			}
+		}
+	}
+
 	int five = 5;
 	int five_y[5];
 	int five_x[5];
@@ -195,12 +251,12 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 			five = 5;
 		}
 	}
-
+	//printf("TIPS: %d\n", five);
 	int state = 0;
 	int last = 0;
-	int bottom;
+	int fist_bottom = HEIGHT-1;
 	//检查突变点。
-	for (int hi = 0; hi != HEIGHT; hi += 3)
+	for (int hi = 0; hi != HEIGHT; hi += 4)
 	{
 		int left = -1, right = -1;
 		for (int wj = 0; wj != WIDTH; wj++)
@@ -220,7 +276,7 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 			}
 		}
 		//printf("diff %d %d %d\n", right - left, last,right - left - last);
-		if (right - left - last <= -4)
+		if (right - left - last <= -3)
 		{
 			state++;
 			if (state == 3 && rowWith[hi] < 0.8 * maxrow)
@@ -229,7 +285,7 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 				{
 					depth_array[hi * WIDTH + tm] = 35535;
 				}
-				bottom = hi;
+				fist_bottom = hi;
 				break;
 			}
 		}
@@ -237,21 +293,35 @@ int analyse(unsigned short* depth_array, int* x, int* y, int *z)
 			state = 0;
 		last = right - left;
 	}
-	int maxheight = (bottom - top);
+
+	int fist_area = 0;
+	for (int hi = 0; hi <= fist_bottom; hi ++)
+	{
+		for (int wj = 0; wj != WIDTH; wj++)
+		{
+			if (depth_array[hi * WIDTH + wj])
+			{
+				fist_area++;
+			}
+		}
+	}
+	int maxheight = (fist_bottom - top);
 	int area = maxheight * maxrow;
 	float lwratio = (float)maxheight / maxrow;
-	float handPercent = (float)hand / area;
+	float fistPercent = (float)fist_area / area;
+	//printf("percent: %f\n", fistPercent);
 	//printf("area: %d\tmaxheight: %d\tmaxrow: %d\thand: %d\n %f %f\n", area, maxheight, maxrow, hand, lwratio, handPercent);
 
 	//如果符合，则输出手掌
-	if (five == 0 && lwratio > PALM_MIN_RATIO)
+	//printf("TIPS: %f %f\n", lwratio, fistPercent);
+	if (five == 0 && lwratio > PALM_MIN_RATIO && fistPercent < HAND_PERCENT)
 	{
 		return GESTURE_PALM;
 	}
 	//if (state == 3)
 	{
-		//检测到突变点，就可以框出范围，计算矩形占比[todo]
-	    if (lwratio < FIST_MAX_RATIO && lwratio > FIST_MIN_RATIO && handPercent > FIST_PERCENT)
+		//检测到突变点，就可以框出范围，计算矩形占比
+	    if (lwratio < FIST_MAX_RATIO && lwratio > FIST_MIN_RATIO && fistPercent > FIST_PERCENT)
 		{
 			//printf("fist!!!!\n");
 			return GESTURE_FIST;

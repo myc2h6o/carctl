@@ -35,67 +35,45 @@ void Car::init() {
 	SetCommState(hCom, &dcb);
 }
 
-void Car::setSpeed(int speed) {
-	if (speed > MAX_SPEED_LEVEL) speedLevel = MAX_SPEED_LEVEL;
-	else if (speed < MIN_SPEED_LEVEL) speedLevel = MIN_SPEED_LEVEL;
-	else speedLevel = speed;
+void Car::setPersonPositions(const vector<Position> &positions) {
+	personPositions = positions;
 }
 
-void Car::run(int status, int x = 0, int y = 0) {
-	carStatus = status;
-	switch (status) {
-	case S_STOP:
-		stop();
-		break;
-	case S_FORWARD:
-		forward();
-		break;
-	case S_BACKWARD:
-		backward();
-		break;
-	case S_FOLLOW:
-		follow((float)x, (float)y);
-		break;
-	case S_SPIN_LEFT:
-		spinLeft();
-		break;
-	case S_SPIN_RIGHT:
-		spinRight();
-		break;
-	default:
-		stop();
-	}
-}
-
-void Car::stop() {
-	outputToLower(0x0f);
-}
-
-void Car::follow(float x, float y) {
+void Car::follow() {
+	status = S_FOLLOW;
 	//get person position
+	if (personPositions.size() == 0) {
+		return;
+	}
+	float x = personPositions[0].x;
+	float y = personPositions[0].y;
 	if (y < 0) { y = -y; }
 
 	float rotate_r = 0.0;
 	//rotate_r
 	if (x > 0.0001 || x < -0.0001) { rotate_r = sqrt(x * x + y * y) / 2 / sqrt(1 - y * (y / (x * x + y * y))); }
 
-	bool doSpin = false;
+	int status = C_WALK;
 	//spin when rotate_r too small, stop when too close to person
 	if (rotate_r > 0 && rotate_r <= CAR_RADIUS) {
-		doSpin = true;
+		status = C_SPIN;
+	}
+	else if (x * x + y * y <= MIN_DISTANCE_2) {
+		status = C_STOP;
 	}
 	if (x < 0) { rotate_r = -rotate_r; }
 
 	//output to lower level
-	if (doSpin) {
-		if (rotate_r > 0) {
-			spinRight();
-		}
-		else {
-			spinLeft();
-		}
+	if (status == C_STOP) {
+		outputToLower(0x0f);
 	}
-	else {
+	else if (status == C_SPIN) {
+		unsigned char high_char = speedLevel + 9;
+		if (rotate_r < 0) { high_char += 3; }
+		unsigned char low_char = 7;
+		outputToLower((high_char << 4) | low_char);
+	}
+	else if (status == C_WALK) {
 		float rate = (rotate_r + CAR_RADIUS) / (rotate_r - CAR_RADIUS);
 		if (rate < 0) rate = -rate;
 		unsigned char rate_index = 0;
@@ -110,26 +88,25 @@ void Car::follow(float x, float y) {
 	}
 }
 
-void Car::forward() {
-	outputToLower(((speedLevel + 1) << 4) | 7);
+void Car::stop() {
+	status = S_STOP;
+	outputToLower(0x0f);
 }
 
-void Car::backward() {
-	outputToLower(((speedLevel + 5) << 4) | 7);
-}
-
-void Car::spinLeft() {
-	//anti-clockwise
-	unsigned char high_char = speedLevel + 12;
-	if (speedLevel == MAX_SPEED_LEVEL) high_char--;
-	outputToLower((high_char << 4) | 7);
-}
-
-void Car::spinRight() {
-	//clockwise
-	unsigned char high_char = speedLevel + 9;
-	if (speedLevel == MAX_SPEED_LEVEL) high_char--;
-	outputToLower((high_char << 4) | 7);
+void Car::process() {
+	if (status == S_FORWARD) {
+		vector<Position> positions;
+		positions.push_back(Position(0, 500));
+		setPersonPositions(positions);
+		follow();
+		status = S_FORWARD;
+	}
+	else if (status == S_FOLLOW) {
+		follow();
+	}
+	else {
+		stop();
+	}
 }
 
 void Car::outputToLower(unsigned char raw_speed) {
@@ -139,9 +116,8 @@ void Car::outputToLower(unsigned char raw_speed) {
 	unsigned char output_buffer[1] = { raw_speed };
 	//cout << (((int)raw_speed & 0xf0) >> 4) << "  " << ((int)raw_speed & 0xf) << endl;
 	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, NULL);
-	/*if (!bReadStat)
+	if (!bReadStat)
 	{
-		printf("write com fail\n");
+		//printf("write com fail\n");
 	}
-	*/
 }
