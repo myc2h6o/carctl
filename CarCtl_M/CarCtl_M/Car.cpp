@@ -1,12 +1,12 @@
 #include "Car.h"
 
 void Car::init() {
-	hCom = CreateFile(TEXT("COM3"),//COM口
+	hCom = CreateFile(TEXT("COM4"),//COM口
 		GENERIC_READ | GENERIC_WRITE, //允许读和写
 		0, //独占方式
 		NULL,
 		OPEN_EXISTING, //打开而不是创建
-		0, //同步方式
+		FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,//asynchronize
 		NULL);
 	if (hCom == (HANDLE)-1)
 	{

@@ -6,7 +6,7 @@ void Car::init() {
 		0, //独占方式
 		NULL,
 		OPEN_EXISTING, //打开而不是创建
-		0, //同步方式
+		FILE_ATTRIBUTE_NORMALFILE_FLAG_OVERLAPPED,//asynchronize
 		NULL);
 	if (hCom == (HANDLE)-1)
 	{

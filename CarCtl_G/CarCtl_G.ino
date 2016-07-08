@@ -5,7 +5,7 @@ const byte L_DIR_PIN = 7;
 const byte R_DIR_PIN = 9;
 const byte TEST_PIN = 13;
 
-const unsigned long DEFAULT_WAIT_TIME = 1500;
+const unsigned long DEFAULT_WAIT_TIME = 1000;
 
 volatile unsigned long last_accept_time = 0;
 volatile byte car_stop = 1;
@@ -34,23 +34,12 @@ void setup() {
 }
 
 void loop() {
-  raw_speed = Serial.read();
-  if(raw_speed == 255) {
-    //serial no value
-    digitalWrite(TEST_PIN, LOW);
-    if(millis() - last_accept_time > DEFAULT_WAIT_TIME){
-      //over time
-      digitalWrite(L_PULSE_PIN, HIGH);
-      digitalWrite(R_PULSE_PIN, HIGH);
-      digitalWrite(L_DIR_PIN, HIGH);
-      digitalWrite(R_DIR_PIN, HIGH);
-      car_stop = 1;
-    }
-  }else{
+  if(Serial.available() > 0){
+    //read serial value
+    raw_speed = Serial.read();
+    last_accept_time = millis();
     digitalWrite(TEST_PIN, HIGH);
     car_stop = 0;
-    //serial has value
-    last_accept_time = millis();
     //status and pulse get
     move_status = (raw_speed >> 4) & 0xf;
     pulse_level = raw_speed & 0xf;
@@ -58,6 +47,8 @@ void loop() {
     //set speed level and direction
     switch(move_status){
     case 0:
+      digitalWrite(L_DIR_PIN, HIGH);
+      digitalWrite(R_DIR_PIN, HIGH);
       car_stop = 1;
       break;
     case 1: case 2: case 3: case 4: //forward
@@ -81,12 +72,26 @@ void loop() {
       digitalWrite(R_DIR_PIN, LOW);
       break;
     default:
+      digitalWrite(L_DIR_PIN, HIGH);
+      digitalWrite(R_DIR_PIN, HIGH);
       car_stop = 1;
       break;
     }
+  }else{
+    if(millis() - last_accept_time > DEFAULT_WAIT_TIME){
+      //over time
+      digitalWrite(TEST_PIN, LOW);
+      digitalWrite(L_PULSE_PIN, HIGH);
+      digitalWrite(R_PULSE_PIN, HIGH);
+      digitalWrite(L_DIR_PIN, HIGH);
+      digitalWrite(R_DIR_PIN, HIGH);
+      car_stop = 1;
+    }
   }
 
-  if(car_stop == 1) return;
+  if(car_stop == 1){
+    return;
+  }
   //emit pulse if car is not in stop status
   if(pulse_count % pulse_left[pulse_level] == 0) digitalWrite(L_PULSE_PIN, LOW);
   else if(pulse_count % (pulse_left[pulse_level] / 2) == 0)digitalWrite(L_PULSE_PIN, HIGH);
