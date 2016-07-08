@@ -23,11 +23,16 @@ Mat depth;
 
 int main(int argc, char **argv)
 {
-	int initialStatus = S_STOP;
-	if (argc > 1 && strcmp(argv[1], "FORWARD") == 0) { initialStatus = S_FORWARD; }
-	Car car(initialStatus);
-	cout << car.getStatus();
-
+	Car car;
+	if ((argc > 1) && (strcmp(argv[1], "FORWARD") == 0)) {
+		car.setStatus(S_FORWARD);
+	}
+	if ((argc > 2)) {
+		int initSpeed = 0;
+		sscanf_s(argv[2], "%d", &initSpeed);
+		car.setSpeed(initSpeed);
+	}
+	
 	UtilRender*  Rcolor = new UtilRender(L"COLOR");
 	UtilRender*  Rdepth = new UtilRender(L"DEPTH");
 
@@ -249,37 +254,33 @@ int main(int argc, char **argv)
 		//car action
 		if (action == ACTION_FOLLOW)
 		{
-			vector<Position> pos;
-			pos.push_back(Position(currx, currz + 200));
-			car.setStatus(S_FOLLOW);
-			car.setPersonPositions(pos);
-			car.follow();
+			car.run(S_FOLLOW, currx, currz + 200);
 			printf("follow\n");
 		}
 		else if (action == ACTION_STOP || action == ACTION_NONE)
 		{
+			car.run(S_STOP);
 			printf("stop\n");
-			car.stop();		
 		}
 		else if (action == ACTION_FORWARD)
 		{
+			car.run(S_FORWARD);
 			printf("forward\n");
-			//car.forward;
 		}
 		else if (action == ACTION_BACKWARD)
 		{
+			car.run(S_BACKWARD);
 			printf("backward\n");
-			//car.forward;
 		}
 		else if (action == ACTION_TURNLEFT)
 		{
+			car.run(S_SPIN_LEFT);
 			printf("turnleft\n");
-			//car.forward;
 		}
 		else if (action == ACTION_TURNRIGHT)
 		{
+			car.run(S_SPIN_RIGHT);
 			printf("turnright\n");
-			//car.forward;
 		}
 
 		lastResult = currResult;
