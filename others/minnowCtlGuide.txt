@@ -1,0 +1,10 @@
+路由器ssid：TP-LINK_D03F (最后可能有个2)
+路由器密码：mycmycmyc
+Minnowboard:
+MAC:  7C-5C-F8-95-CF-CC
+Name: yanjiasen4
+default position: 192.168.1.101:2306
+
+PC总控程序： BoardCtl_P.exe
+Minnowboard总控程序：BoardCtl_M.exe
+需要上传的车控程序： CarCtl_M.exe

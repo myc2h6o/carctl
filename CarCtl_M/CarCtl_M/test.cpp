@@ -16,4 +16,11 @@ int main(int argc, char **argv){
 		car.setSpeed(initSpeed);
 	}
 	cout << car.getStatus() << " " << car.getSpeed() << endl;
+
+	for (int i = 0; i < 200; ++i) {
+		car.run(S_FORWARD);
+		Sleep(33);
+	}
+	car.run(S_STOP);
+	cin.get();
 }

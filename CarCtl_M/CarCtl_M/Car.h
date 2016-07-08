@@ -35,7 +35,7 @@ const float pulse_rate[N_PULSE_RATE] = { 0.7071, 0.7489, 0.7908, 0.8326, 0.8745,
 
 class Car {
 public:
-	void run(int status, int x, int y);
+	void run(int status, int x = 0, int y = 0);
 	int getStatus() { return carStatus; }
 	void setStatus(int status) { carStatus = status; }
 	Car() { init(); }
@@ -47,7 +47,6 @@ public:
 private:
 	int speedLevel = DEFAULT_SPEED_LEVEL;
 	int carStatus = S_STOP;
-	
 	HANDLE hCom;
 	void init();
 	void stop();
@@ -56,5 +55,5 @@ private:
 	void backward();
 	void spinLeft();
 	void spinRight();
-	void outputToLower(unsigned char raw_speed);
+	void outputToCar(unsigned char raw_speed);
 };

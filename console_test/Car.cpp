@@ -68,7 +68,7 @@ void Car::run(int status, int x, int y) {
 }
 
 void Car::stop() {
-	outputToLower(0x0f);
+	outputToCar(0x0f);
 }
 
 void Car::follow(float x, float y) {
@@ -106,33 +106,33 @@ void Car::follow(float x, float y) {
 		else if (pulse_rate[rate_index] - rate >= rate - pulse_rate[rate_index - 1]) rate_index--;
 
 		unsigned char high_char = speedLevel + 1;
-		outputToLower((high_char << 4) | rate_index);
+		outputToCar((high_char << 4) | rate_index);
 	}
 }
 
 void Car::forward() {
-	outputToLower(((speedLevel + 1) << 4) | 7);
+	outputToCar(((speedLevel + 5) << 4) | 7);
 }
 
 void Car::backward() {
-	outputToLower(((speedLevel + 5) << 4) | 7);
+	outputToCar(((speedLevel + 5) << 4) | 7);
 }
 
 void Car::spinLeft() {
 	//anti-clockwise
 	unsigned char high_char = speedLevel + 12;
 	if (speedLevel == MAX_SPEED_LEVEL) high_char--;
-	outputToLower((high_char << 4) | 7);
+	outputToCar((high_char << 4) | 7);
 }
 
 void Car::spinRight() {
 	//clockwise
 	unsigned char high_char = speedLevel + 9;
 	if (speedLevel == MAX_SPEED_LEVEL) high_char--;
-	outputToLower((high_char << 4) | 7);
+	outputToCar((high_char << 4) | 7);
 }
 
-void Car::outputToLower(unsigned char raw_speed) {
+void Car::outputToCar(unsigned char raw_speed) {
 	PurgeComm(hCom, PURGE_TXCLEAR | PURGE_RXCLEAR); //清空缓冲区
 	DWORD wCount;//读取的字节数
 	BOOL bReadStat;
@@ -141,7 +141,7 @@ void Car::outputToLower(unsigned char raw_speed) {
 	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, NULL);
 	/*if (!bReadStat)
 	{
-	printf("write com fail\n");
+		printf("write com fail\n");
 	}
 	*/
 }

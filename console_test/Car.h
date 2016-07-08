@@ -1,17 +1,17 @@
 /*
-*high 4 bit:
-*0,15  stop
-*1-4   forward
-*5-8   backward
-*9-11  clockwise
-*12-14 anti-clockwise
-*
-*low 4 bit:
-*1-6  l>r
-*7    1:1
-*8-14 l<r
-*15   stop
-*/
+ *high 4 bit:
+ *0,15  stop
+ *1-4   forward
+ *5-8   backward
+ *9-11  clockwise
+ *12-14 anti-clockwise
+ *
+ *low 4 bit:
+ *1-6  l>r
+ *7    1:1
+ *8-14 l<r
+ *15   stop
+ */
 #pragma once
 #include <Windows.h>
 #include <iostream>
@@ -47,7 +47,6 @@ public:
 private:
 	int speedLevel = DEFAULT_SPEED_LEVEL;
 	int carStatus = S_STOP;
-
 	HANDLE hCom;
 	void init();
 	void stop();
@@ -56,5 +55,5 @@ private:
 	void backward();
 	void spinLeft();
 	void spinRight();
-	void outputToLower(unsigned char raw_speed);
+	void outputToCar(unsigned char raw_speed);
 };
