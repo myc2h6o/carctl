@@ -60,19 +60,43 @@ int main() {
 			saServer.sin_family = AF_INET;
 			saServer.sin_port = htons(SERVER_PORT);
 			saServer.sin_addr.S_un.S_addr = inet_addr(NET_ADDR.c_str());
-			cout << "command: check/upload/start_stay/start_forward/stop/shutdown/quit:\n";
+			cout << "command: check/upload/start_stay_<0|1|2|3>/start_forward_<0|1|2|3>/stop/\n\tshutdown/restart/quit:\n";
 			//get command
 			cin >> command;
 			if (command == "quit") {
 				exit(0);
 			}
-			else if (command == "start_stay")
+			else if (command == "start_stay_0")
 			{
-				command = "START_CAR_STAY";
+				command = "START_CAR_STAY_0";
 			}
-			else if (command == "start_forward")
+			else if (command == "start_stay_1")
 			{
-				command = "START_CAR_FORWARD";
+				command = "START_CAR_STAY_1";
+			}
+			else if (command == "start_stay_2")
+			{
+				command = "START_CAR_STAY_2";
+			}
+			else if (command == "start_stay_3")
+			{
+				command = "START_CAR_STAY_3";
+			}
+			else if (command == "start_forward_0")
+			{
+				command = "START_CAR_FORWARD_0";
+			}
+			else if (command == "start_forward_1")
+			{
+				command = "START_CAR_FORWARD_1";
+			}
+			else if (command == "start_forward_2")
+			{
+				command = "START_CAR_FORWARD_2";
+			}
+			else if (command == "start_forward_3")
+			{
+				command = "START_CAR_FORWARD_3";
 			}
 			else if (command == "stop")
 			{
@@ -81,6 +105,9 @@ int main() {
 			else if (command == "shutdown") {
 				command = "SHUT_DOWN";
 			}
+			else if (command == "restart") {
+				command = "RESTART";
+			}
 			else if (command == "upload") {
 				command = "UPLOAD_CAR_CTL";
 			}
@@ -88,7 +115,7 @@ int main() {
 				command = "CHECK";
 			}
 			else {
-				cout << "wrong command, ";
+				cout << "wrong command\n";
 				continue;
 			}
 

@@ -13,8 +13,6 @@ const int FILE_BUFFER_SIZE = 512;
 
 #define SERVER_PORT 2306
 
-char file_send_buffer[FILE_BUFFER_SIZE];
-
 int main() {
 	WORD wVersionRequested;
 	WSADATA wsaData;

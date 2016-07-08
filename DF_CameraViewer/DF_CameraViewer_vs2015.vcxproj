@@ -204,7 +204,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;include;res;../common/include;../../include;$(RSSDK_DIR)/include;$(RSSDK_DIR)/sample/common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\include\opencv2;.;include;res;../common/include;../../include;$(RSSDK_DIR)/include;$(RSSDK_DIR)/sample/common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;NDEBUG;_CONSOLE;_WIN64_WINNT=0x0602;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -222,8 +222,8 @@
       <AdditionalIncludeDirectories>.;include;res;../common/include;../../include;$(RSSDK_DIR)/include;$(RSSDK_DIR)/sample/common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libpxc.lib;libpxcutils.lib;;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../common/lib/$(PlatformName)/$(PlatformToolset);../../lib/$(PlatformName);$(RSSDK_DIR)/lib/$(PlatformName);$(RSSDK_DIR)/sample/common/lib/$(PlatformName)/$(PlatformToolset);;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libpxc.lib;libpxcutils.lib;opencv_calib3d231.lib;opencv_contrib231.lib;opencv_core231.lib;opencv_features2d231.lib;opencv_flann231.lib;opencv_gpu231.lib;opencv_highgui231.lib;opencv_imgproc231.lib;opencv_legacy231.lib;opencv_ml231.lib;opencv_objdetect231.lib;opencv_ts231.lib;opencv_video231.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\opencv\build\x64\vc10\lib;D:\opencv\build\x86\vc10\lib;../common/lib/$(PlatformName)/$(PlatformToolset);../../lib/$(PlatformName);$(RSSDK_DIR)/lib/$(PlatformName);$(RSSDK_DIR)/sample/common/lib/$(PlatformName)/$(PlatformToolset);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>

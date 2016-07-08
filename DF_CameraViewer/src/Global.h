@@ -1,6 +1,6 @@
 #ifndef __GLOBAL__
 #define __GLOBAL__
-//#include"pxcprojection.h"
+#include"pxcprojection.h"
 
 #define WIDTH 640
 #define HEIGHT 480

@@ -5,10 +5,9 @@ const byte L_DIR_PIN = 7;
 const byte R_DIR_PIN = 9;
 const byte TEST_PIN = 13;
 
-const unsigned int DEFAULT_WAIT_TIME = 200;
+const unsigned long DEFAULT_WAIT_TIME = 1500;
 
 volatile unsigned long last_accept_time = 0;
-volatile unsigned long max_wait_time = DEFAULT_WAIT_TIME;
 volatile byte car_stop = 1;
 volatile byte raw_speed = 255;
 volatile byte speed_level = 0;
@@ -38,24 +37,19 @@ void loop() {
   raw_speed = Serial.read();
   if(raw_speed == 255) {
     //serial no value
-    /*unsigned long new_wait_time = millis() - last_accept_time;
-    if(new_wait_time > max_wait_time){
+    digitalWrite(TEST_PIN, LOW);
+    if(millis() - last_accept_time > DEFAULT_WAIT_TIME){
       //over time
-      digitalWrite(TEST_PIN, LOW);
       digitalWrite(L_PULSE_PIN, HIGH);
       digitalWrite(R_PULSE_PIN, HIGH);
       digitalWrite(L_DIR_PIN, HIGH);
       digitalWrite(R_DIR_PIN, HIGH);
       car_stop = 1;
-      max_wait_time = new_wait_time;
-      if(max_wait_time > DEFAULT_WAIT_TIME) max_wait_time = DEFAULT_WAIT_TIME;
-    }*/
+    }
   }else{
     digitalWrite(TEST_PIN, HIGH);
     car_stop = 0;
-    //serial has value  
-    //self-adaption max_wait_time
-    max_wait_time = (millis() - last_accept_time + max_wait_time + 1) / 2;
+    //serial has value
     last_accept_time = millis();
     //status and pulse get
     move_status = (raw_speed >> 4) & 0xf;
@@ -83,6 +77,7 @@ void loop() {
       break;
     case 12: case 13: case 14: //anti-clockwise
       speed_level = move_status - 12;
+      
       digitalWrite(L_DIR_PIN, LOW);
       digitalWrite(R_DIR_PIN, LOW);
       break;

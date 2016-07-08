@@ -13,7 +13,6 @@
 using namespace cv;
 using namespace std;
 
-
 PXCProjection *projection;
 Mat depth;
 
@@ -45,7 +44,7 @@ int main(int argc, char **argv)
 	}
 
 	projection = psm->QueryCaptureManager()->QueryDevice()->CreateProjection();
-
+	
 	PXCImage *colorIm, *depthIm;
 	PXCImage::ImageData depth_data;
 	PXCImage::ImageData color_data;
