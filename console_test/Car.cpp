@@ -1,12 +1,12 @@
 #include "Car.h"
 
 void Car::init() {
-	hCom = CreateFile(TEXT("COM3"),//COM口
+	hCom = CreateFile(TEXT("COM4"),//COM口
 		GENERIC_WRITE, //允许读和写
 		0, //独占方式
 		NULL,
 		OPEN_EXISTING, //打开而不是创建
-		0,//asynchronize
+		0,//synchronize
 		NULL);
 	if (hCom == (HANDLE)-1)
 	{
@@ -19,8 +19,8 @@ void Car::init() {
 	SetupComm(hCom, 1, 1024); //输入缓冲区和输出缓冲区的大小都是1024
 	COMMTIMEOUTS TimeOuts;
 	//设定写超时
-	TimeOuts.WriteTotalTimeoutMultiplier = 5000;
-	TimeOuts.WriteTotalTimeoutConstant = 2000;
+	TimeOuts.WriteTotalTimeoutMultiplier = 10;
+	TimeOuts.WriteTotalTimeoutConstant = 10;
 	SetCommTimeouts(hCom, &TimeOuts); //设置超时
 	DCB dcb;
 	GetCommState(hCom, &dcb);
@@ -129,7 +129,7 @@ void Car::spinRight() {
 }
 
 void Car::outputToCar(unsigned char raw_speed) {
-	//PurgeComm(hCom, PURGE_TXCLEAR | PURGE_RXCLEAR); //清空缓冲区
+	//PurgeComm(hCom, PURGE_TXCLEAR); //清空缓冲区
 	DWORD wCount;//读取的字节数
 	BOOL bReadStat;
 	unsigned char output_buffer[1] = { raw_speed };
