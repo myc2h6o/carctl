@@ -1,7 +1,7 @@
 #include "Car.h"
 
 void Car::init() {
-	hCom = CreateFile(TEXT("COM4"),//COM口
+	hCom = CreateFile(TEXT("COM3"),//COM口
 		GENERIC_WRITE, //允许读和写
 		0, //独占方式
 		NULL,
