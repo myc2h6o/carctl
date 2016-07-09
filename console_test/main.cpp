@@ -13,6 +13,7 @@
 #include <string.h>
 #include <time.h>
 
+
 using namespace cv;
 using namespace std;
 
@@ -33,22 +34,22 @@ int main(int argc, char **argv)
 		car.setSpeed(initSpeed);
 	}
 	
-	UtilRender*  Rcolor = new UtilRender(L"COLOR");
+	//UtilRender*  Rcolor = new UtilRender(L"COLOR");
 	UtilRender*  Rdepth = new UtilRender(L"DEPTH");
 
 	PXCSenseManager *psm = PXCSenseManager::CreateInstance();
 	if (!psm)
 	{
-		wprintf_s(L"Unabel to create the PXCSenseManager\n");
+		printf("Unabel to create the PXCSenseManager\n");
 		return 1;
 	}
 
-	psm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, WIDTH, HEIGHT);
+	//psm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, WIDTH, HEIGHT);
 	psm->EnableStream(PXCCapture::STREAM_TYPE_DEPTH, WIDTH, HEIGHT);
 
 	if (psm->Init() != PXC_STATUS_NO_ERROR)
 	{
-		wprintf_s(L"Unable to Init the PXCSenseManager\n");
+		printf("Unable to Init the PXCSenseManager\n");
 		return 2;
 	}
 
@@ -62,12 +63,12 @@ int main(int argc, char **argv)
 
 	//Mat img = Mat(480, 640, CV_8UC1);
 
-	namedWindow("color", 0);
-	namedWindow("depth", 0);
+	//namedWindow("color", 0);
+	//namedWindow("depth", 0);
 
 	int lastResult = NO_HAND;
 	int currResult = GESTURE_NONE;
-	int action = ACTION_NONE;
+	int action = ACTION_CONTINUE;
 	int dx, dy, dz;
 	int currx, lastx, curry, lasty, currz, lastz;
 	dx = dy = dz = 0;//lastx = lasty = lastz = 0;
@@ -85,17 +86,17 @@ int main(int argc, char **argv)
 		//Sender::send("s", 1);
 		PXCCapture::Sample *sample = psm->QuerySample();
 
-		colorIm = sample->color;
+		//colorIm = sample->color;
 		depthIm = sample->depth;
 
-		colorIm->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB24, &color_data);
+		//colorIm->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_RGB24, &color_data);
 		depthIm->AcquireAccess(PXCImage::ACCESS_READ, PXCImage::PIXEL_FORMAT_DEPTH, &depth_data);
 		depth_information = sample->depth->QueryInfo();
-		color_information = sample->color->QueryInfo();
+		//color_information = sample->color->QueryInfo();
 		//cout << depthIm->PixelFormatToString(depth_data.format);
 		//printf("%d",(int)depth_information.width);
 		depth = Mat(Size(depth_information.width, depth_information.height), CV_16UC1, (void*)depth_data.planes[0], depth_data.pitches[0] / sizeof(uchar));
-		Mat color(Size(color_information.width, color_information.height), CV_8UC3, (void*)color_data.planes[0], color_data.pitches[0] / sizeof(uchar));
+		//Mat color(Size(color_information.width, color_information.height), CV_8UC3, (void*)color_data.planes[0], color_data.pitches[0] / sizeof(uchar));
 
 		/*
 		for (int i = 0; i < dataLen; i += 6)
@@ -252,7 +253,19 @@ int main(int argc, char **argv)
 		}
 
 		//car action
-		if (action == ACTION_FOLLOW)
+		if (car.getStatus() == S_FORWARD) {
+			if (action == ACTION_STOP)
+			{
+				printf("stop\n");
+				car.run(S_STOP);
+			}
+			else
+			{
+				printf("forward\n");
+				car.run(S_FORWARD);
+			}
+		}
+		else if (action == ACTION_FOLLOW)
 		{
 			car.run(S_FOLLOW, currx, currz + 200);
 			printf("follow\n");
@@ -264,32 +277,37 @@ int main(int argc, char **argv)
 		}
 		else if (action == ACTION_FORWARD)
 		{
-			car.run(S_FORWARD);
-			printf("forward\n");
-		}
-		else if (action == ACTION_BACKWARD)
-		{
 			car.run(S_BACKWARD);
 			printf("backward\n");
 		}
+		else if (action == ACTION_BACKWARD)
+		{
+			car.run(S_FORWARD);
+			printf("forward\n");
+		}
 		else if (action == ACTION_TURNLEFT)
+		{
+			car.run(S_SPIN_RIGHT);
+			printf("turnright\n");
+		}
+		else if (action == ACTION_TURNRIGHT)
 		{
 			car.run(S_SPIN_LEFT);
 			printf("turnleft\n");
 		}
-		else if (action == ACTION_TURNRIGHT)
+		else if (action == ACTION_CONTINUE)
 		{
-			car.run(S_SPIN_RIGHT);
-			printf("turnright\n");
+			car.run(S_FORWARD);
+			printf("continue\n");
 		}
 
 		lastResult = currResult;
 
 		depthIm->ReleaseAccess(&depth_data);
-		colorIm->ReleaseAccess(&color_data);
+		//colorIm->ReleaseAccess(&color_data);
 
-		imshow("color", color);
-		imshow("depth", depth);
+		//imshow("color", color);
+		//imshow("depth", depth);
 		//if (!renderColor->RenderFrame(sample->color)) break;
 		//if (!renderDepth->RenderFrame(sample->depth)) break;
 

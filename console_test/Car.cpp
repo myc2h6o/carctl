@@ -2,11 +2,11 @@
 
 void Car::init() {
 	hCom = CreateFile(TEXT("COM3"),//COM口
-		GENERIC_READ | GENERIC_WRITE, //允许读和写
+		GENERIC_WRITE, //允许读和写
 		0, //独占方式
 		NULL,
 		OPEN_EXISTING, //打开而不是创建
-		FILE_ATTRIBUTE_NORMALFILE_FLAG_OVERLAPPED,//asynchronize
+		0,//asynchronize
 		NULL);
 	if (hCom == (HANDLE)-1)
 	{
@@ -16,14 +16,10 @@ void Car::init() {
 	{
 		printf("COM打开成功！\n");
 	}
-	SetupComm(hCom, 1024, 1024); //输入缓冲区和输出缓冲区的大小都是1024
+	SetupComm(hCom, 1, 1024); //输入缓冲区和输出缓冲区的大小都是1024
 	COMMTIMEOUTS TimeOuts;
-	//设定读超时
-	TimeOuts.ReadIntervalTimeout = 1000;
-	TimeOuts.ReadTotalTimeoutMultiplier = 500;
-	TimeOuts.ReadTotalTimeoutConstant = 5000;
 	//设定写超时
-	TimeOuts.WriteTotalTimeoutMultiplier = 500;
+	TimeOuts.WriteTotalTimeoutMultiplier = 5000;
 	TimeOuts.WriteTotalTimeoutConstant = 2000;
 	SetCommTimeouts(hCom, &TimeOuts); //设置超时
 	DCB dcb;
@@ -133,7 +129,7 @@ void Car::spinRight() {
 }
 
 void Car::outputToCar(unsigned char raw_speed) {
-	PurgeComm(hCom, PURGE_TXCLEAR | PURGE_RXCLEAR); //清空缓冲区
+	//PurgeComm(hCom, PURGE_TXCLEAR | PURGE_RXCLEAR); //清空缓冲区
 	DWORD wCount;//读取的字节数
 	BOOL bReadStat;
 	unsigned char output_buffer[1] = { raw_speed };
@@ -143,5 +139,5 @@ void Car::outputToCar(unsigned char raw_speed) {
 	{
 		printf("write com fail\n");
 	}
-	
+
 }
