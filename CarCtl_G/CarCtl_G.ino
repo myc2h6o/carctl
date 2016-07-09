@@ -16,7 +16,7 @@ volatile byte move_status = 0;
 
 volatile unsigned int pulse_count = 0;
 
-unsigned int delay_time[4] = {34452, 16328, 11363, 9890};
+unsigned int delay_time[4] = {11817, 5461, 3788, 3297};
 //unsigned int pulse_left[16] =  {41, 40, 43, 36, 40, 36, 36, 35, 34, 33, 35, 30, 34, 30, 29, 35};
 //unsigned int pulse_right[16] = {29, 30, 34, 30, 35, 33, 34, 35, 36, 36, 40, 36, 43, 40, 41, 35}; //last one is for error case
 unsigned int pulse_left[16] =  {48, 45, 42, 40, 35, 35, 33, 32, 30, 30, 30, 29, 26, 25, 24, 32};

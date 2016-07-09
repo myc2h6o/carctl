@@ -21,9 +21,15 @@
     <ClCompile Include="CarCtl_Test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Sender.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Sender.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
