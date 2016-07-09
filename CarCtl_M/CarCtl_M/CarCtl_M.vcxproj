@@ -120,7 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Car.cpp" />
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="CarCtl_Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h" />

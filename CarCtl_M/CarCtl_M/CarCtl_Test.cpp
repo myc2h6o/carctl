@@ -19,11 +19,19 @@ int main(int argc, char **argv){
 		car.run(S_STOP);
 	}
 	else if (car.getSpeed() == 1) {
-		for (int i = 0; i < 100; ++i) {
+		for (int i = 0; i < 20; ++i) {
 			//DEFAULT
-			car.run(S_SPIN_LEFT);
+			//car.run(S_SPIN_LEFT);
 			//car.run(S_SPIN_RIGHT);
-			//car.run(S_BACKWARD);
+			car.run(S_BACKWARD);
+			//car.run(S_FORWARD);
+			Sleep(10);
+		}
+		for (int i = 0; i < 60; ++i) {
+			//DEFAULT
+			//car.run(S_SPIN_LEFT);
+			//car.run(S_SPIN_RIGHT);
+			car.run(S_FORWARD);
 			//car.run(S_FORWARD);
 			Sleep(10);
 		}
