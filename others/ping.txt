@@ -1,0 +1,16 @@
+echo processing...
+echo ping date：%date% >> pingall.txt
+echo ping time：%time% >> pingall.txt
+echo.>>pingall.txt
+echo ip：>>pingall.txt
+
+for /l %%i in (1,1,255) do ping -n 1 -w 1 192.168.1.%%i |find "回复" >> pingall.txt
+done
+echo ----------------------------------------------------------->> pingall.txtping date：2016/07/10 周日 
+ping time：19:55:12.89 
+
+ip：
+来自 192.168.1.1 的回复: 字节=32 时间=1ms TTL=64
+来自 192.168.1.104 的回复: 字节=32 时间=8ms TTL=64
+来自 192.168.1.105 的回复: 字节=32 时间<1ms TTL=64
+-----------------------------------------------------------

@@ -37,6 +37,10 @@ void loop() {
   if(Serial.available() > 0){
     //read serial value
     raw_speed = Serial.read();
+    //because upper is slow
+    while(Serial.available() > 0){
+      raw_speed = Serial.read();
+    }
     last_accept_time = millis();
     digitalWrite(TEST_PIN, HIGH);
     car_stop = 0;

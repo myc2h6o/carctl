@@ -136,6 +136,7 @@ void Car::outputToCar(unsigned char raw_speed) {
 	unsigned char output_buffer[1] = { raw_speed };
 	cout << (((int)raw_speed & 0xf0) >> 4) << "  " << ((int)raw_speed & 0xf) << endl;
 	bReadStat = WriteFile(hCom, output_buffer, 1, &wCount, NULL);
+	/*
 	if (!bReadStat)
 	{
 		char c[2] = { 0, 0 };
@@ -146,5 +147,5 @@ void Car::outputToCar(unsigned char raw_speed) {
 		char c[2] = { (raw_speed & 0xf0) >> 4, raw_speed & 0xf };
 		Sender::send(c, 2);
 	}
-
+	*/
 }

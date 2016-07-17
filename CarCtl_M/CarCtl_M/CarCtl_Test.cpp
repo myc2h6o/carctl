@@ -1,45 +1,33 @@
 #include "Car.h"
-
+#include <conio.h>
 
 int main(int argc, char **argv){
 	Car car;
-	if ((argc > 1) && (strcmp(argv[1], "FORWARD") == 0)) {
-		car.setStatus(S_FORWARD);
-	}
-	if ((argc > 2)) {
-		int initSpeed = 0;
-		sscanf_s(argv[2], "%d", &initSpeed);
-		car.setSpeed(initSpeed);
-	}
-	if (car.getSpeed() == 0) {
-		for (int i = 0; i < 100; ++i) {
-			car.run(S_BACKWARD);
-			Sleep(10);
+	car.setSpeed(3);
+	cout << "\nq w\ns a d\n\n";
+	while (1) {
+		if (_kbhit()) {
+			char c = _getch();
+			switch (c) {
+			case 'w':
+				car.run(S_FORWARD);
+				break;
+			case 's':
+				car.run(S_BACKWARD);
+				break;
+			case 'a':
+				car.run(S_SPIN_LEFT);
+				break;
+			case 'd':
+				car.run(S_SPIN_RIGHT);
+				break;
+			case 27:
+				return 1;
+			default:
+				car.run(S_STOP);
+				break;
+			}
 		}
-		car.run(S_STOP);
-	}
-	else if (car.getSpeed() == 1) {
-		for (int i = 0; i < 100; ++i) {
-			//DEFAULT
-			//car.run(S_SPIN_LEFT);
-			//car.run(S_SPIN_RIGHT);
-			car.run(S_FORWARD);
-			//car.run(S_BACKWARD);
-			Sleep(10);
-		}
-	}
-	else if (car.getSpeed() == 2) {
-		for (int i = 0; i < 100; ++i) {
-			car.run(S_SPIN_LEFT);
-			Sleep(10);
-		}
-		car.run(S_STOP);
-	}
-	else if (car.getSpeed() == 3) {
-		for (int i = 0; i < 100; ++i) {
-			car.run(S_SPIN_RIGHT);
-			Sleep(33);
-		}
-		car.run(S_STOP);
+		Sleep(33);
 	}
 }
