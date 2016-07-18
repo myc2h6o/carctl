@@ -8,3 +8,10 @@ default position: 192.168.1.101:2306
 PC总控程序： BoardCtl_P.exe
 Minnowboard总控程序：BoardCtl_M.exe
 需要上传的车控程序： CarCtl_M.exe
+
+
+speedLevel->speed(cm/s)
+0: 6.77
+1: 8.38
+2: 9.20
+3: 10.30

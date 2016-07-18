@@ -4,6 +4,19 @@
 int main(int argc, char **argv){
 	Car car;
 	car.setSpeed(3);
+	//car.setSpeed(2);
+	//car.setSpeed(1);
+	//car.setSpeed(0);
+	cin.get();
+	for (int i = 0; i < 200; ++i) {
+		car.run(S_FORWARD);
+		//car.run(S_BACKWARD);
+		Sleep(33);
+	}
+	car.run(S_STOP);
+
+	/*
+	car.setSpeed(3);
 	cout << "\nq w\ns a d\n\n";
 	while (1) {
 		if (_kbhit()) {
@@ -30,4 +43,5 @@ int main(int argc, char **argv){
 		}
 		Sleep(33);
 	}
+	*/
 }
